@@ -2,7 +2,7 @@
 
 yum update
 
-cat >> /etc/yum.repos.d/grafana.repo
+cat > /etc/yum.repos.d/grafana.repo
 #se ingresan las siguientes lineas en el editor
 [grafana]
 name=grafana
