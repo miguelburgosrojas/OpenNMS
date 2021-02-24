@@ -10,6 +10,8 @@ yum update
 
 yum install grafana
 
+echo y 
+
 systemctl start grafana-server
 systemctl enable grafana-server
 ############
