@@ -12,3 +12,9 @@ printf "autorefresh=1\n" >> elasticsearch.repo
 printf "type=rpm-md\n" >> elasticsearch.repo
 
 yum install --enablerepo=elasticsearch elasticsearch
+
+systemctl status elasticsearch.service
+sudo /bin/systemctl daemon-reload
+sudo /bin/systemctl enable elasticsearch.service
+systemctl start elasticsearch.service
+
