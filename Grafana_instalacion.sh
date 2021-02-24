@@ -8,9 +8,7 @@ echo -e "[grafana] \nname=grafana \nbaseurl=https://packages.grafana.com/oss/rpm
 
 yum update
 
-yum install grafana
-
-echo y 
+yes | yum install grafana
 
 systemctl start grafana-server
 systemctl enable grafana-server
