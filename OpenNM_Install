@@ -1,0 +1,112 @@
+[root@opennms ~]# firewall-cmd --state
+running
+[root@opennms ~]# systemctl stop firewalld
+[root@opennms ~]# systemctl disable firewalld
+Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.
+Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
+[root@opennms ~]# systemctl mask --now firewalld
+Created symlink from /etc/systemd/system/firewalld.service to /dev/null.
+[root@opennms ~]#
+
+[root@opennms ~]# yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+[root@opennms ~]# yum update
+
+
+[root@opennms ~]# yum -y install postgresql12-server
+[root@opennms ~]# /usr/pgsql-12/bin/postgresql-12-setup initdb
+
+[root@opennms ~]# /usr/pgsql-12/bin/postgresql-12-setup initdb
+Data directory is not empty!
+
+[root@opennms ~]# systemctl enable postgresql-12
+Created symlink from /etc/systemd/system/multi-user.target.wants/postgresql-12.service to /usr/lib/systemd/system/postgresql-12.service.
+[root@opennms ~]# systemctl start postgresql-12
+
+
+[root@opennms ~]# yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+
+[root@opennms ~]# yum -y install opennms
+
+
+[root@opennms opennms]# tree -L 1
+.
+├── bin
+├── contrib
+├── data
+├── deploy
+├── etc
+├── jetty-webapps
+├── lib
+├── logs -> /var/log/opennms
+├── share -> /var/opennms
+└── system
+
+10 directories, 0 files
+[root@opennms opennms]#
+
+[root@opennms opennms]# vi /etc/yum.repos.d/opennms-repo-stable-rhel7.repo
+
+[root@opennms opennms]# su - postgres
+-bash-4.2$ createuser -P opennms
+Enter password for new role:
+Enter it again:
+-bash-4.2$ createdb -O opennms opennms
+
+-bash-4.2$ psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+ALTER ROLE
+-bash-4.2$ exit
+
+[root@opennms opennms]# vi /var/lib/pgsql/12/data/pg_hba.conf
+ from ident to md5
+
+[root@opennms opennms]# systemctl restart postgresql-12
+
+[root@opennms opennms]# vi etc/opennms-datasources.xml
+
+
+<jdbc-data-source name="opennms"
+                    database-name="opennms"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"
+                    password="** YOUR-OPENNMS-PASSWORD **" />
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"
+                    password="** YOUR-POSTGRES-PASSWORD **" />
+					
+[root@opennms opennms]# bin/runjava -s
+runjava: Looking for an appropriate JVM...
+runjava: Checking for an appropriate JVM in JAVA_HOME...
+runjava: Skipping... JAVA_HOME not set.
+runjava: Checking JVM in the PATH: "/etc/alternatives/java"...
+runjava: Did not find an appropriate JVM in the PATH: "/etc/alternatives/java"
+runjava: Searching for a good JVM...
+runjava: Found a good JVM in "/usr/lib/jvm/java-11-openjdk-11.0.9.11-2.el7_9.x86_64/bin/java".
+runjava: Value of "/usr/lib/jvm/java-11-openjdk-11.0.9.11-2.el7_9.x86_64/bin/java" stored in configuration file.
+[root@opennms opennms]#
+
+
+[root@opennms bin]# pwd
+/opt/opennms/bin
+[root@opennms bin]# ./install -dis
+
+ALTER USER opennms WITH PASSWORD 'opennms';
+
+opennms=> ALTER USER opennms WITH PASSWORD 'opennms';
+ALTER ROLE
+opennms=>
+[root@opennms opennms]# systemctl restart postgresql-12
+
+
+failed for user "postgres"
+
+[root@opennms opennms]# vi /opt/opennms/etc/opennms-datasources.xml
+
+
+[root@opennms bin]# systemctl enable opennms
+Created symlink from /etc/systemd/system/multi-user.target.wants/opennms.service to /usr/lib/systemd/system/opennms.service.
+[root@opennms bin]#
