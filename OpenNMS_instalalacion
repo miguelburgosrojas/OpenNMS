@@ -1,3 +1,5 @@
+>>>>>>>>>>>>>>>>>>>>>> Revision  y borrado de FW <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 [root@opennms ~]# firewall-cmd --state
 running
 [root@opennms ~]# systemctl stop firewalld
@@ -8,25 +10,75 @@ Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
 Created symlink from /etc/systemd/system/firewalld.service to /dev/null.
 [root@opennms ~]#
 
+>>>>>>>>>>>>>>>>> Seleccion de OPENNMS<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[root@opennms ~]# cat /etc/yum.repos.d/opennms-repo-rhel7.repo
+[root@opennms ~]# vi /etc/yum.repos.d/opennms-repo-rhel7.repo
+
+[opennms-repo-opennms-26-common]
+name=RPMs Common to All OpenNMS Architectures (opennms-26)
+baseurl=http://yum.opennms.org/opennms-26/common
+enabled=1
+gpgcheck=1
+
+[opennms-repo-opennms-26-rhel7]
+name=RedHat Enterprise Linux 7.x and CentOS 7.x (opennms-26)
+baseurl=http://yum.opennms.org/opennms-26/rhel7
+enabled=1
+gpgcheck=1
+
+[root@opennms ~]# rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+>>>>>>>>>>>>>     Descarga de Postgress             <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 [root@opennms ~]# yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-[root@opennms ~]# yum update
+Loaded plugins: fastestmirror
+pgdg-redhat-repo-latest.noarch.rpm                          | 6.8 kB  00:00:00
 
+[root@opennms ~]# yum  install postgresql12-server
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+epel/x86_64/metalink                                        |  33 kB  00:00:00
+ * base: mirror.cedia.org.ec
+ * epel: mirrors.upr.edu
+ * extras: mirror.cedia.org.ec
+ * updates: mirror.cedia.org.ec
 
-[root@opennms ~]# yum -y install postgresql12-server
 [root@opennms ~]# /usr/pgsql-12/bin/postgresql-12-setup initdb
-
-[root@opennms ~]# /usr/pgsql-12/bin/postgresql-12-setup initdb
-Data directory is not empty!
 
 [root@opennms ~]# systemctl enable postgresql-12
 Created symlink from /etc/systemd/system/multi-user.target.wants/postgresql-12.service to /usr/lib/systemd/system/postgresql-12.service.
 [root@opennms ~]# systemctl start postgresql-12
 
+>>>>>>>>>>>>>>>>>>>>>> Editar base de datos <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-[root@opennms ~]# yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+[root@opennms ~]# su - postgres
+Last login: Fri Mar 26 14:48:20 -05 2021 on pts/1
+-bash-4.2$ createuser -P opennms
+Enter password for new role:
+Enter it again:
+-bash-4.2$ createdb -O opennms opennms
+-bash-4.2$ psql -c "ALTER USER postgres WITH PASSWORD 'opennms';"
+ALTER ROLE
+-bash-4.2$
+-bash-4.2$ exit
+logout
+
+>>>>>>>>>>>>>>>>>>>>>>>>Editar Base de datos >>>>>>>>>>>>>>>>>>>
+
+[root@opennms ~]# vi /var/lib/pgsql/12/data/pg_hba.conf
+
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+
+[root@opennms ~]# systemctl restart postgresql-12
+
+
+>>>>>>>>>>>>>>>>>>>>>>>>> Instlar OpenNMS <<<<<<<<<<<<<<<<<<<<<
+
+[root@opennms ~]# yum update
 
 [root@opennms ~]# yum -y install opennms
-
 
 [root@opennms opennms]# tree -L 1
 .
@@ -44,69 +96,42 @@ Created symlink from /etc/systemd/system/multi-user.target.wants/postgresql-12.s
 10 directories, 0 files
 [root@opennms opennms]#
 
-[root@opennms opennms]# vi /etc/yum.repos.d/opennms-repo-stable-rhel7.repo
+>>>>> Configurar OPENNMS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-[root@opennms opennms]# su - postgres
--bash-4.2$ createuser -P opennms
-Enter password for new role:
-Enter it again:
--bash-4.2$ createdb -O opennms opennms
+[root@opennms ~]# vi /opt/opennms/etc/opennms-datasources.xml
 
--bash-4.2$ psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
-ALTER ROLE
--bash-4.2$ exit
-
-[root@opennms opennms]# vi /var/lib/pgsql/12/data/pg_hba.conf
- from ident to md5
-
-[root@opennms opennms]# systemctl restart postgresql-12
-
-[root@opennms opennms]# vi etc/opennms-datasources.xml
-
-
-<jdbc-data-source name="opennms"
+  <jdbc-data-source name="opennms"
                     database-name="opennms"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/opennms"
-                    user-name="** YOUR-OPENNMS-USERNAME **"
-                    password="** YOUR-OPENNMS-PASSWORD **" />
+                    user-name="opennms"
+                    password="opennms" />
 
-<jdbc-data-source name="opennms-admin"
+  <jdbc-data-source name="opennms-admin"
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
                     user-name="postgres"
-                    password="** YOUR-POSTGRES-PASSWORD **" />
-					
-[root@opennms opennms]# bin/runjava -s
-runjava: Looking for an appropriate JVM...
-runjava: Checking for an appropriate JVM in JAVA_HOME...
-runjava: Skipping... JAVA_HOME not set.
-runjava: Checking JVM in the PATH: "/etc/alternatives/java"...
-runjava: Did not find an appropriate JVM in the PATH: "/etc/alternatives/java"
-runjava: Searching for a good JVM...
-runjava: Found a good JVM in "/usr/lib/jvm/java-11-openjdk-11.0.9.11-2.el7_9.x86_64/bin/java".
-runjava: Value of "/usr/lib/jvm/java-11-openjdk-11.0.9.11-2.el7_9.x86_64/bin/java" stored in configuration file.
-[root@opennms opennms]#
+                    password="opennms" />
+</datasource-configuration>
 
+>>>>>>>>>>>>>>>>>>>>>>>> Inicializar OPENNMS <<<<<<<<<<<<<<<<<<<<<<<
 
-[root@opennms bin]# pwd
-/opt/opennms/bin
-[root@opennms bin]# ./install -dis
+[root@opennms ~]# /opt/opennms/bin/runjava -s
 
-ALTER USER opennms WITH PASSWORD 'opennms';
+[root@opennms ~]# vi /opt/opennms/etc/rrd-configuration.properties
+# uses ".jnilib":
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so
+#
 
-opennms=> ALTER USER opennms WITH PASSWORD 'opennms';
-ALTER ROLE
-opennms=>
-[root@opennms opennms]# systemctl restart postgresql-12
+[root@opennms ~]# yum install rrdtool jrrd2
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+ * base: mirror.cedia.org.ec
 
+[root@opennms opennms]# /opt/opennms/bin/install -dis
 
-failed for user "postgres"
+[root@opennms opennms]# /opt/opennms/bin/install -dis
 
-[root@opennms opennms]# vi /opt/opennms/etc/opennms-datasources.xml
-
-
-[root@opennms bin]# systemctl enable opennms
-Created symlink from /etc/systemd/system/multi-user.target.wants/opennms.service to /usr/lib/systemd/system/opennms.service.
-[root@opennms bin]#
