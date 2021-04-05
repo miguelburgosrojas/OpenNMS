@@ -16,3 +16,9 @@ opennms-core-27.1.0-1.noarch
 warning: /opt/opennms/etc/collectd-configuration.xml saved as /opt/opennms/etc/collectd-configuration.xml.rpmsave
 [root@opennms ~]#
 
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>          Eliminararchivos de opennms                <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+[root@opennms opt]# rm -rf opennms/
+
+
+
