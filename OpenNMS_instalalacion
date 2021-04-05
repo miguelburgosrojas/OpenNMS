@@ -133,5 +133,31 @@ Loading mirror speeds from cached hostfile
 
 [root@opennms opennms]# /opt/opennms/bin/install -dis
 
+[root@opennms opennms]# systemctl enable opennms
+[root@opennms opennms]# systemctl start opennms
+[root@opennms opennms]# systemctl status opennms
+● opennms.service - OpenNMS server
+   Loaded: loaded (/usr/lib/systemd/system/opennms.service; enabled; vendor preset: disabled)
+   Active: active (running) since Tue 2021-03-30 10:58:20 -05; 5 days ago
+ Main PID: 2235 (java)
+   CGroup: /system.slice/opennms.service
+           ├─2234 bash /etc/init.d/opennms -s start
+           └─2235 /usr/lib/jvm/java-11-openjdk-11.0.10.0.9-0.el7_9.x86_64/bin/ja...
+
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.LinkedList$...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.stream.Abst...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.stream.Abst...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.stream.Abst...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.stream.Abst...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.stream.Refe...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at org.opennms.netmgt.telemetry.pr...)
+Apr 05 10:50:33 opennms.labbps opennms[989]: at java.base/java.util.concurrent....)
+Apr 05 10:50:33 opennms.labbps opennms[989]: ... 5 more
+Apr 05 10:50:33 opennms.labbps opennms[989]: org.opennms.features.telemetry.lis...)
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@opennms opennms]#
+
+
+
 [root@opennms opennms]# /opt/opennms/bin/install -dis
 
