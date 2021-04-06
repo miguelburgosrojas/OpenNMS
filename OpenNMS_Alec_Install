@@ -35,5 +35,8 @@ admin@opennms> config:update
 >>>>>>>>>>>>>>>>>> Dejar alec al arranque  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 [root@opennms ~]# echo 'alec-opennms-standalone wait-for-kar=opennms-alec-plugin' > "$OPENNMS_HOME/etc/featuresBoot.d/alec.boot"
 
+admin@opennms> feature:install alec-opennms-standalone
+
+
 
 
