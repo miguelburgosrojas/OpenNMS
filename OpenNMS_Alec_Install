@@ -1,0 +1,34 @@
+>>>>>>>>>>>>> Instlación de Alec <<<<<<<<<<<<<<<<<<<<<<<<<<
+Prerequisitos openNMS
+
+>>>>>>>>>>>>> Variables de ambiente <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+[root@opennms ~]# echo $OPENNMS_HOME
+/opt/opennms
+[root@opennms ~]#
+
+>>>>>>>>>>>>> Ingreso al karaf <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+[root@opennms ~]# ssh -p 8101 admin@localhost
+
+>>>>>>>>>>>>>> Configuracion historicos <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+...
+admin@opennms> config:edit org.opennms.features.alarms.history.elastic
+admin@opennms> config:property-set elasticUrl http://192.168.15.214:9200
+admin@opennms> config:update
+admin@opennms> feature:install opennms-alarm-history-elastic
+
+>>>>>>>>>>>>>>>>>>>>> <z<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+>>>>>>>>>>>>>>>> Configuracion Flow <<<<<<<<<<<<<<<<<<<<<<<<
+
+admin@opennms> config:edit org.opennms.features.flows.persistence.elastic
+admin@opennms> config:property-set elasticUrl http://192.168.15.214:9200
+admin@opennms> config:update
+
+>>>>>>>>>>>>>>>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
