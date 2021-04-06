@@ -1,0 +1,3 @@
+>>>>>>>>> No usar <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+[root@opennms ~]# /opt/opennms/bin/opennms -vvvv -f start
