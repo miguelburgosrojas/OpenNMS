@@ -27,8 +27,13 @@ admin@opennms> config:edit org.opennms.features.flows.persistence.elastic
 admin@opennms> config:property-set elasticUrl http://192.168.15.214:9200
 admin@opennms> config:update
 
->>>>>>>>>>>>>>>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> Install alec  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+
+[root@opennms ~]# yum install opennms-alec-plugin
+
+>>>>>>>>>>>>>>>>>> Dejar alec al arranque  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+[root@opennms ~]# echo 'alec-opennms-standalone wait-for-kar=opennms-alec-plugin' > "$OPENNMS_HOME/etc/featuresBoot.d/alec.boot"
 
 
 
